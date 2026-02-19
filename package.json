@@ -1,11 +1,11 @@
 {
   "name": "@deshell/mcp",
   "version": "1.0.0",
-  "description": "MCP server for the DeShell web proxy — deshell_scrape and deshell_search for Claude Desktop, Cursor, Windsurf, and any MCP-compatible AI tool",
+  "description": "MCP server for the deshell web proxy — deshell_scrape and deshell_search for Claude Desktop, Cursor, Windsurf, and any MCP-compatible AI tool",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/exec-io/deshell.git",
+    "url": "https://github.com/exec-io/deshell-mcp.git",
     "directory": "mcp"
   },
   "keywords": ["mcp", "deshell", "web-scraping", "search", "ai", "claude", "cursor"],
