@@ -9,8 +9,46 @@ const http = require('http');
 const { URL } = require('url');
 
 const PROXY_BASE = (process.env.DESHELL_PROXY_URL || 'https://proxy.deshell.ai').replace(/\/$/, '');
-const API_KEY    = process.env.DESHELL_API_KEY || '';
+let   API_KEY    = process.env.DESHELL_API_KEY || '';
 const VERSION    = require('./package.json').version;
+
+// ── CLI mode ──────────────────────────────────────────────────────────────────
+// If invoked with a subcommand (fetch/search), run as one-shot CLI and exit.
+const [,, cmd, ...cliArgs] = process.argv;
+
+if (cmd === 'fetch' || cmd === 'search') {
+  if (!API_KEY) {
+    // Try macOS Keychain fallback
+    const { execSync } = require('child_process');
+    try {
+      process.env.DESHELL_API_KEY = execSync(
+        'security find-generic-password -s deshell-api-key -w 2>/dev/null',
+        { encoding: 'utf8', stdio: ['pipe','pipe','pipe'] }
+      ).trim();
+      API_KEY = process.env.DESHELL_API_KEY;
+    } catch (_) {}
+  }
+
+  (async () => {
+    try {
+      if (cmd === 'fetch') {
+        if (!cliArgs[0]) { process.stderr.write('Usage: deshell fetch <url>\n'); process.exit(1); }
+        const result = await callTool('deshell_scrape', { url: cliArgs[0] });
+        process.stdout.write(result + '\n');
+      } else {
+        if (!cliArgs.length) { process.stderr.write('Usage: deshell search <query>\n'); process.exit(1); }
+        const result = await callTool('deshell_search', { query: cliArgs.join(' ') });
+        process.stdout.write(result + '\n');
+      }
+    } catch (e) {
+      process.stderr.write('Error: ' + e.message + '\n');
+      process.exit(1);
+    }
+  })();
+} else {
+  // No CLI subcommand — fall through to MCP stdio server below
+  startMCPServer();
+}
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
 
@@ -52,6 +90,42 @@ const TOOLS = [
       required: ['query'],
     },
   },
+  {
+    name: 'deshell_screenshot',
+    description: 'Take a screenshot of a web page and return it as an image.',
+    inputSchema: {
+      type: 'object',
+      properties: { url: { type: 'string', description: 'The URL of the web page to screenshot' } },
+      required: ['url'],
+    },
+  },
+  {
+    name: 'deshell_render',
+    description: 'Render a web page (such as a single page javascript app) before trying to extract markdown.',
+    inputSchema: {
+      type: 'object',
+      properties: { url: { type: 'string', description: 'The URL of the javascript web page to render' } },
+      required: ['url'],
+    },
+  },
+  {
+    name: 'deshell_raw',
+    description: 'Fetch a URL and return its raw content bypassing any attempt to render markdown.',
+    inputSchema: {
+      type: 'object',
+      properties: { url: { type: 'string', description: 'The URL to fetch' } },
+      required: ['url'],
+    },
+  },
+  {
+    name: 'deshell_nocache',
+    description: 'Fetch a URL and return its content without using the cache.',
+    inputSchema: {
+      type: 'object',
+      properties: { url: { type: 'string', description: 'The URL to fetch uncached' } },
+      required: ['url'],
+    },
+  },
 ];
 
 // ── Tool execution ────────────────────────────────────────────────────────────
@@ -67,6 +141,22 @@ async function callTool(name, args) {
   if (name === 'deshell_search') {
     if (!args.query) throw new Error('query is required');
     return get(`${PROXY_BASE}/search?q=${encodeURIComponent(args.query)}`, { ...headers, 'Accept': 'text/markdown' });
+  }
+  if (name === 'deshell_screenshot') {
+    if (!args.url) throw new Error('url is required');
+    return get(`${PROXY_BASE}/screenshot/${args.url}`, headers);
+  }
+  if (name === 'deshell_render') {
+    if (!args.url) throw new Error('url is required');
+    return get(`${PROXY_BASE}/render/${args.url}`, headers);
+  }
+  if (name === 'deshell_raw') {
+    if (!args.url) throw new Error('url is required');
+    return get(`${PROXY_BASE}/raw/${args.url}`, headers);
+  }
+  if (name === 'deshell_nocache') {
+    if (!args.url) throw new Error('url is required');
+    return get(`${PROXY_BASE}/nocache/${args.url}`, headers);
   }
   throw new Error(`Unknown tool: ${name}`);
 }
@@ -108,16 +198,18 @@ async function dispatch(msg) {
 
 // ── Stdin reader ──────────────────────────────────────────────────────────────
 
-let buf = '';
-process.stdin.setEncoding('utf8');
-process.stdin.on('data', (chunk) => {
-  buf += chunk;
-  const lines = buf.split('\n');
-  buf = lines.pop();
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    try { dispatch(JSON.parse(line)); }
-    catch { fail(null, -32700, 'Parse error'); }
-  }
-});
-process.stdin.on('end', () => process.exit(0));
+function startMCPServer() {
+  let buf = '';
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', (chunk) => {
+    buf += chunk;
+    const lines = buf.split('\n');
+    buf = lines.pop();
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try { dispatch(JSON.parse(line)); }
+      catch { fail(null, -32700, 'Parse error'); }
+    }
+  });
+  process.stdin.on('end', () => process.exit(0));
+}

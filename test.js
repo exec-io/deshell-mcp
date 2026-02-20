@@ -71,7 +71,7 @@ test('tools/list returns deshell_scrape and deshell_search', async () => {
 
   assert.equal(list.id, 2);
   const names = list.result.tools.map((t) => t.name);
-  assert.deepEqual(names, ['deshell_scrape', 'deshell_search']);
+  assert.deepEqual(names, ['deshell_scrape', 'deshell_search', 'deshell_screenshot', 'deshell_render', 'deshell_raw', 'deshell_nocache']);
 
   const scrape = list.result.tools.find((t) => t.name === 'deshell_scrape');
   assert.ok(scrape.description);
@@ -80,6 +80,22 @@ test('tools/list returns deshell_scrape and deshell_search', async () => {
   const search = list.result.tools.find((t) => t.name === 'deshell_search');
   assert.ok(search.description);
   assert.equal(search.inputSchema.required[0], 'query');
+
+  const screenshot = list.result.tools.find((t) => t.name === 'deshell_screenshot');
+  assert.ok(screenshot.description);
+  assert.equal(screenshot.inputSchema.required[0], 'url');
+
+  const render = list.result.tools.find((t) => t.name === 'deshell_render');
+  assert.ok(render.description);
+  assert.equal(render.inputSchema.required[0], 'url');
+
+  const raw = list.result.tools.find((t) => t.name === 'deshell_raw');
+  assert.ok(raw.description);
+  assert.equal(raw.inputSchema.required[0], 'url');
+
+  const nocache = list.result.tools.find((t) => t.name === 'deshell_nocache');
+  assert.ok(nocache.description);
+  assert.equal(nocache.inputSchema.required[0], 'url');
 });
 
 test('tools/call returns error when DESHELL_API_KEY is missing', async () => {
