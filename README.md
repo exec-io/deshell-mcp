@@ -1,13 +1,18 @@
 # @deshell/mcp
 
-MCP server for the [DeShell](https://deshell.ai) web proxy. Gives Claude Desktop, Cursor, Windsurf, and any MCP-compatible AI tool the ability to fetch web pages and search the web — clean Markdown, no noise.
+MCP server for the [DeShell](https://deshell.ai) web proxy. Gives Claude Desktop, Cursor, Windsurf, OpenClaw, and any MCP-compatible AI tool the ability to fetch web pages and search the web — clean Markdown, no noise.
 
 ## Tools
 
 | Tool | Description |
 |------|-------------|
 | `deshell_scrape` | Fetch a URL and return its content as clean Markdown. Handles JavaScript-rendered pages, PDFs, and automatic content extraction. |
-| `deshell_search` | Search the web and return results as Markdown. Returns titles, URLs, and snippet text for the top results. |
+| `deshell_search` | Search the web and return results as Markdown. Includes titles, URLs, and snippet text for the top results. |
+| `deshell_screenshot` | Take a screenshot of a web page and return it as an image. |
+| `deshell_render` | Render a web page (such as a single page javascript app) before trying to extract markdown. |
+| `deshell_raw` | Fetch a URL and return its raw content bypassing any attempt to render markdown. |
+| `deshell_nocache` | Fetch a URL and return its content without using the cache. |
+
 
 ## Setup
 
