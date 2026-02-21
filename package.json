@@ -1,17 +1,17 @@
 {
-  "name": "@deshell/mcp",
+  "name": "@distil.net/mcp",
   "version": "1.2.0",
-  "description": "MCP server for the DeShell web proxy — deshell_scrape, deshell_search, deshell_screenshot, deshell_raw, deshell_render, deshell_nocache for Claude Desktop, Cursor, Windsurf, and any MCP-compatible AI tool",
+  "description": "MCP server for the Distil web proxy — distil_scrape, distil_search, distil_screenshot, distil_raw, distil_render, distil_nocache for Claude Desktop, Cursor, Windsurf, and any MCP-compatible AI tool",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/exec-io/deshell-mcp.git",
+    "url": "https://github.com/exec-io/distil-mcp.git",
     "directory": "mcp"
   },
-  "keywords": ["mcp", "deshell", "web-scraping", "search", "ai", "claude", "cursor", "openclaw"],
+  "keywords": ["mcp", "Distil", "web-scraping", "search", "ai", "claude", "cursor", "openclaw"],
   "engines": { "node": ">=18" },
   "bin": {
-    "deshell": "./index.js"
+    "Distil": "./index.js"
   },
   "scripts": {
     "test": "node --test test.js",

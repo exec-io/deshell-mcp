@@ -1,24 +1,24 @@
-# @deshell/mcp
+# @distil.net/mcp
 
-MCP server for the [DeShell](https://deshell.ai) web proxy. Gives Claude Desktop, Cursor, Windsurf, OpenClaw, and any MCP-compatible AI tool the ability to fetch web pages and search the web — clean Markdown, no noise.
+MCP for the [Distil](https://Distil.ai) web proxy. Provides a fall through CLI and also Gives Claude Desktop, Cursor, Windsurf and any MCP-compatible AI tool the ability to fetch web pages and search the web — clean Markdown, no noise.
 
 ## Tools
 
 | Tool | Description |
 |------|-------------|
-| `deshell_scrape` | Fetch a URL and return its content as clean Markdown. Handles JavaScript-rendered pages, PDFs, and automatic content extraction. |
-| `deshell_search` | Search the web and return results as Markdown. Includes titles, URLs, and snippet text for the top results. |
-| `deshell_screenshot` | Take a screenshot of a web page and return it as an image. |
-| `deshell_render` | Render a web page (such as a single page javascript app) before trying to extract markdown. |
-| `deshell_raw` | Fetch a URL and return its raw content bypassing any attempt to render markdown. |
-| `deshell_nocache` | Fetch a URL and return its content without using the cache. |
+| `distil_scrape` | Fetch a URL and return its content as clean Markdown. Handles JavaScript-rendered pages, PDFs, and automatic content extraction. |
+| `distil_search` | Search the web and return results as Markdown. Includes titles, URLs, and snippet text for the top results. |
+| `distil_screenshot` | Take a screenshot of a web page and return it as an image. |
+| `distil_render` | Render a web page (such as a single page javascript app) before trying to extract markdown. |
+| `distil_raw` | Fetch a URL and return its raw content bypassing any attempt to render markdown. |
+| `distil_nocache` | Fetch a URL and return its content without using the cache. |
 
 
 ## Setup
 
-### 1. Get a DeShell API key
+### 1. Get a Distil API key
 
-Sign up at [deshell.ai](https://deshell.ai) to get your API key (`dk_...`).
+Sign up at [distil.ai](https://distil.ai) to get your API key (`dk_...`).
 
 ### 2. Add to your MCP config
 
@@ -27,11 +27,11 @@ Sign up at [deshell.ai](https://deshell.ai) to get your API key (`dk_...`).
 ```json
 {
   "mcpServers": {
-    "deshell": {
+    "Distil": {
       "command": "npx",
-      "args": ["-y", "@deshell/mcp"],
+      "args": ["-y", "@distil.net/mcp"],
       "env": {
-        "DESHELL_API_KEY": "dk_your_key_here"
+        "DISTIL_API_KEY": "dk_your_key_here"
       }
     }
   }
@@ -42,26 +42,29 @@ Sign up at [deshell.ai](https://deshell.ai) to get your API key (`dk_...`).
 
 ### 3. Restart your AI tool
 
-The `deshell_scrape` and `deshell_search` tools will appear automatically.
+The `distil_scrape`, `distil_search`, `distil_screenshot`, `distil_render`, `distil_raw` and `distil_nocache` tools will appear automatically.
 
 ## Configuration
 
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
-| `DESHELL_API_KEY` | *(required)* | Your DeShell API key |
-| `DESHELL_PROXY_URL` | `https://proxy.deshell.ai` | Proxy base URL (override for self-hosted) |
+| `DISTIL_API_KEY` | *(required)* | Your Distil API key |
+| `DISTIL_PROXY_URL` | `https://proxy.distil.ai` | Proxy base URL (override for self-hosted) |
 
 ## Usage examples
 
 Once installed, you can ask your AI assistant things like:
 
-- *"Fetch https://example.com and summarise it"* → uses `deshell_scrape`
-- *"Search the web for the latest Node.js release notes"* → uses `deshell_search`
+- *"Fetch https://example.com and summarise it"* → uses `distil_scrape`
+- *"Search the web for the latest Node.js release notes"* → uses `distil_search`
+- *"Take a screen shot of npmjs.org"* → uses `distil_screenshot`
+- *"Go and read the web page of openai.com"* → uses `distil_render`
+- *"Make sure you get the latest version of openclaw.ai"* → uses `distil_nocache`
 
 ## Running manually
 
 ```bash
-DESHELL_API_KEY=dk_your_key npx @deshell/mcp
+DISTIL_API_KEY=dk_your_key npx @distil.net/mcp
 ```
 
 The server speaks [MCP JSON-RPC 2.0](https://modelcontextprotocol.io) over stdio.
@@ -69,9 +72,9 @@ The server speaks [MCP JSON-RPC 2.0](https://modelcontextprotocol.io) over stdio
 ## Development
 
 ```bash
-# Clone the deshell repo
-git clone https://github.com/exec-io/deshell.git
-cd deshell/mcp
+# Clone the Distil repo
+git clone https://github.com/exec-io/distil-mcp.git
+cd distil.net/mcp
 
 # Run tests (no dependencies needed — uses Node built-ins only)
 node --test test.js

@@ -1,15 +1,16 @@
 #!/usr/bin/env node
-// @deshell/mcp — MCP server for the DeShell proxy
-// Exposes deshell_scrape and deshell_search as MCP tools over JSON-RPC 2.0 stdio.
-// Usage: npx @deshell/mcp (set DESHELL_API_KEY env var first)
+// @distil.net/mcp — MCP server for the Distil proxy
+// Exposes distil_scrape, distil_search, distil_screenshot, distil_render, distil_raw
+// and distil_nocache as MCP tools over JSON-RPC 2.0 stdio.
+// Usage: npx @distil.net/mcp (set DISTIL_API_KEY env var first)
 'use strict';
 
 const https = require('https');
 const http = require('http');
 const { URL } = require('url');
 
-const PROXY_BASE = (process.env.DESHELL_PROXY_URL || 'https://proxy.deshell.ai').replace(/\/$/, '');
-let   API_KEY    = process.env.DESHELL_API_KEY || '';
+const PROXY_BASE = (process.env.DISTIL_PROXY_URL || 'https://proxy.Distil.ai').replace(/\/$/, '');
+let   API_KEY    = process.env.DISTIL_API_KEY || '';
 const VERSION    = require('./package.json').version;
 
 // ── CLI mode ──────────────────────────────────────────────────────────────────
@@ -21,23 +22,23 @@ if (cmd === 'fetch' || cmd === 'search') {
     // Try macOS Keychain fallback
     const { execSync } = require('child_process');
     try {
-      process.env.DESHELL_API_KEY = execSync(
-        'security find-generic-password -s deshell-api-key -w 2>/dev/null',
+      process.env.DISTIL_API_KEY = execSync(
+        'security find-generic-password -s Distil-api-key -w 2>/dev/null',
         { encoding: 'utf8', stdio: ['pipe','pipe','pipe'] }
       ).trim();
-      API_KEY = process.env.DESHELL_API_KEY;
+      API_KEY = process.env.DISTIL_API_KEY;
     } catch (_) {}
   }
 
   (async () => {
     try {
       if (cmd === 'fetch') {
-        if (!cliArgs[0]) { process.stderr.write('Usage: deshell fetch <url>\n'); process.exit(1); }
-        const result = await callTool('deshell_scrape', { url: cliArgs[0] });
+        if (!cliArgs[0]) { process.stderr.write('Usage: Distil fetch <url>\n'); process.exit(1); }
+        const result = await callTool('distil_scrape', { url: cliArgs[0] });
         process.stdout.write(result + '\n');
       } else {
-        if (!cliArgs.length) { process.stderr.write('Usage: deshell search <query>\n'); process.exit(1); }
-        const result = await callTool('deshell_search', { query: cliArgs.join(' ') });
+        if (!cliArgs.length) { process.stderr.write('Usage: Distil search <query>\n'); process.exit(1); }
+        const result = await callTool('distil_search', { query: cliArgs.join(' ') });
         process.stdout.write(result + '\n');
       }
     } catch (e) {
@@ -73,7 +74,7 @@ function get(url, headers) {
 
 const TOOLS = [
   {
-    name: 'deshell_scrape',
+    name: 'distil_scrape',
     description: 'Fetch a URL and return its content as clean Markdown. Handles JavaScript-rendered pages, PDFs, and automatic content extraction.',
     inputSchema: {
       type: 'object',
@@ -82,7 +83,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'deshell_search',
+    name: 'distil_search',
     description: 'Search the web and return results as Markdown. Includes titles, URLs, and snippet text for the top results.',
     inputSchema: {
       type: 'object',
@@ -91,7 +92,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'deshell_screenshot',
+    name: 'distil_screenshot',
     description: 'Take a screenshot of a web page and return it as an image.',
     inputSchema: {
       type: 'object',
@@ -100,7 +101,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'deshell_render',
+    name: 'distil_render',
     description: 'Render a web page (such as a single page javascript app) before trying to extract markdown.',
     inputSchema: {
       type: 'object',
@@ -109,7 +110,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'deshell_raw',
+    name: 'distil_raw',
     description: 'Fetch a URL and return its raw content bypassing any attempt to render markdown.',
     inputSchema: {
       type: 'object',
@@ -118,7 +119,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'deshell_nocache',
+    name: 'distil_nocache',
     description: 'Fetch a URL and return its content without using the cache.',
     inputSchema: {
       type: 'object',
@@ -131,30 +132,30 @@ const TOOLS = [
 // ── Tool execution ────────────────────────────────────────────────────────────
 
 async function callTool(name, args) {
-  if (!API_KEY) throw new Error('DESHELL_API_KEY environment variable is required');
-  const headers = { 'X-DeShell-Key': API_KEY };
+  if (!API_KEY) throw new Error('DISTIL_API_KEY environment variable is required');
+  const headers = { 'X-Distil-Key': API_KEY };
 
-  if (name === 'deshell_scrape') {
+  if (name === 'distil_scrape') {
     if (!args.url) throw new Error('url is required');
     return get(`${PROXY_BASE}/${args.url}`, headers);
   }
-  if (name === 'deshell_search') {
+  if (name === 'distil_search') {
     if (!args.query) throw new Error('query is required');
     return get(`${PROXY_BASE}/search?q=${encodeURIComponent(args.query)}`, { ...headers, 'Accept': 'text/markdown' });
   }
-  if (name === 'deshell_screenshot') {
+  if (name === 'distil_screenshot') {
     if (!args.url) throw new Error('url is required');
     return get(`${PROXY_BASE}/screenshot/${args.url}`, headers);
   }
-  if (name === 'deshell_render') {
+  if (name === 'distil_render') {
     if (!args.url) throw new Error('url is required');
     return get(`${PROXY_BASE}/render/${args.url}`, headers);
   }
-  if (name === 'deshell_raw') {
+  if (name === 'distil_raw') {
     if (!args.url) throw new Error('url is required');
     return get(`${PROXY_BASE}/raw/${args.url}`, headers);
   }
-  if (name === 'deshell_nocache') {
+  if (name === 'distil_nocache') {
     if (!args.url) throw new Error('url is required');
     return get(`${PROXY_BASE}/nocache/${args.url}`, headers);
   }
@@ -172,7 +173,7 @@ async function dispatch(msg) {
   try {
     switch (method) {
       case 'initialize':
-        ok(id, { protocolVersion: '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: '@deshell/mcp', version: VERSION } });
+        ok(id, { protocolVersion: '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: '@distil.net/mcp', version: VERSION } });
         break;
       case 'initialized':
       case 'notifications/initialized':

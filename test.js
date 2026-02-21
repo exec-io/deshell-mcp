@@ -1,5 +1,5 @@
 'use strict';
-// Tests for @deshell/mcp — uses Node built-in test runner (node --test)
+// Tests for @distil.net/mcp — uses Node built-in test runner (node --test)
 // Spawns the MCP server as a child process and exercises it over stdio.
 
 const { test } = require('node:test');
@@ -59,11 +59,11 @@ test('initialize returns protocolVersion and serverInfo', async () => {
   ]);
   assert.equal(res.id, 1);
   assert.equal(res.result.protocolVersion, '2024-11-05');
-  assert.equal(res.result.serverInfo.name, '@deshell/mcp');
+  assert.equal(res.result.serverInfo.name, '@distil.net/mcp');
   assert.ok(res.result.capabilities.tools);
 });
 
-test('tools/list returns deshell_scrape and deshell_search', async () => {
+test('tools/list returns distil_scrape and distil_search', async () => {
   const [init, list] = await rpc([
     { jsonrpc: '2.0', id: 1, method: 'initialize', params: {} },
     { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} },
@@ -71,46 +71,46 @@ test('tools/list returns deshell_scrape and deshell_search', async () => {
 
   assert.equal(list.id, 2);
   const names = list.result.tools.map((t) => t.name);
-  assert.deepEqual(names, ['deshell_scrape', 'deshell_search', 'deshell_screenshot', 'deshell_render', 'deshell_raw', 'deshell_nocache']);
+  assert.deepEqual(names, ['distil_scrape', 'distil_search', 'distil_screenshot', 'distil_render', 'distil_raw', 'distil_nocache']);
 
-  const scrape = list.result.tools.find((t) => t.name === 'deshell_scrape');
+  const scrape = list.result.tools.find((t) => t.name === 'distil_scrape');
   assert.ok(scrape.description);
   assert.equal(scrape.inputSchema.required[0], 'url');
 
-  const search = list.result.tools.find((t) => t.name === 'deshell_search');
+  const search = list.result.tools.find((t) => t.name === 'distil_search');
   assert.ok(search.description);
   assert.equal(search.inputSchema.required[0], 'query');
 
-  const screenshot = list.result.tools.find((t) => t.name === 'deshell_screenshot');
+  const screenshot = list.result.tools.find((t) => t.name === 'distil_screenshot');
   assert.ok(screenshot.description);
   assert.equal(screenshot.inputSchema.required[0], 'url');
 
-  const render = list.result.tools.find((t) => t.name === 'deshell_render');
+  const render = list.result.tools.find((t) => t.name === 'distil_render');
   assert.ok(render.description);
   assert.equal(render.inputSchema.required[0], 'url');
 
-  const raw = list.result.tools.find((t) => t.name === 'deshell_raw');
+  const raw = list.result.tools.find((t) => t.name === 'distil_raw');
   assert.ok(raw.description);
   assert.equal(raw.inputSchema.required[0], 'url');
 
-  const nocache = list.result.tools.find((t) => t.name === 'deshell_nocache');
+  const nocache = list.result.tools.find((t) => t.name === 'distil_nocache');
   assert.ok(nocache.description);
   assert.equal(nocache.inputSchema.required[0], 'url');
 });
 
-test('tools/call returns error when DESHELL_API_KEY is missing', async () => {
-  const env = { DESHELL_API_KEY: '' };
+test('tools/call returns error when DISTIL_API_KEY is missing', async () => {
+  const env = { DISTIL_API_KEY: '' };
   const [res] = await rpc([
-    { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'deshell_scrape', arguments: { url: 'https://example.com' } } },
+    { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'distil_scrape', arguments: { url: 'https://example.com' } } },
   ], { env });
   assert.ok(res.error, 'Expected an error response');
-  assert.match(res.error.message, /DESHELL_API_KEY/);
+  assert.match(res.error.message, /DISTIL_API_KEY/);
 });
 
-test('tools/call deshell_scrape proxies to DESHELL_PROXY_URL', async () => {
+test('tools/call distil_scrape proxies to DISTIL_PROXY_URL', async () => {
   // Spin up a tiny local HTTP server to act as the proxy
   const server = http.createServer((req, res) => {
-    assert.ok(req.headers['x-deshell-key'], 'Missing X-DeShell-Key header');
+    assert.ok(req.headers['x-distil-key'], 'Missing X-Distil-Key header');
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end(`# Mocked scrape for ${req.url}`);
   });
@@ -119,11 +119,11 @@ test('tools/call deshell_scrape proxies to DESHELL_PROXY_URL', async () => {
 
   try {
     const env = {
-      DESHELL_API_KEY: 'dk_test',
-      DESHELL_PROXY_URL: `http://127.0.0.1:${port}`,
+      DISTIL_API_KEY: 'dk_test',
+      DISTIL_PROXY_URL: `http://127.0.0.1:${port}`,
     };
     const [res] = await rpc([
-      { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'deshell_scrape', arguments: { url: 'https://example.com' } } },
+      { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'distil_scrape', arguments: { url: 'https://example.com' } } },
     ], { env });
 
     assert.ok(!res.error, `Unexpected error: ${res.error?.message}`);
@@ -134,7 +134,7 @@ test('tools/call deshell_scrape proxies to DESHELL_PROXY_URL', async () => {
   }
 });
 
-test('tools/call deshell_search appends Accept: text/markdown header', async () => {
+test('tools/call DISTIL_search appends Accept: text/markdown header', async () => {
   const receivedHeaders = {};
   const server = http.createServer((req, res) => {
     Object.assign(receivedHeaders, req.headers);
@@ -146,11 +146,11 @@ test('tools/call deshell_search appends Accept: text/markdown header', async () 
 
   try {
     const env = {
-      DESHELL_API_KEY: 'dk_test',
-      DESHELL_PROXY_URL: `http://127.0.0.1:${port}`,
+      DISTIL_API_KEY: 'dk_test',
+      DISTIL_PROXY_URL: `http://127.0.0.1:${port}`,
     };
     const [res] = await rpc([
-      { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'deshell_search', arguments: { query: 'deshell ai proxy' } } },
+      { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'distil_search', arguments: { query: 'Distil ai proxy' } } },
     ], { env });
 
     assert.ok(!res.error, `Unexpected error: ${res.error?.message}`);
@@ -189,7 +189,7 @@ test('ping returns empty result', async () => {
   assert.deepEqual(res.result, {});
 });
 
-test('DESHELL_PROXY_URL override is respected', async () => {
+test('DISTIL_PROXY_URL override is respected', async () => {
   let hitCustomProxy = false;
   const server = http.createServer((req, res) => {
     hitCustomProxy = true;
@@ -201,11 +201,11 @@ test('DESHELL_PROXY_URL override is respected', async () => {
 
   try {
     const env = {
-      DESHELL_API_KEY: 'dk_test',
-      DESHELL_PROXY_URL: `http://127.0.0.1:${port}`,
+      DISTIL_API_KEY: 'dk_test',
+      DISTIL_PROXY_URL: `http://127.0.0.1:${port}`,
     };
     await rpc([
-      { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'deshell_scrape', arguments: { url: 'https://example.com' } } },
+      { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'distil_scrape', arguments: { url: 'https://example.com' } } },
     ], { env });
     assert.ok(hitCustomProxy, 'Custom proxy was not hit');
   } finally {
