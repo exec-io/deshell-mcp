@@ -1,5 +1,5 @@
 'use strict';
-// Tests for @distil.net/mcp — uses Node built-in test runner (node --test)
+// Tests for distil-mcp — uses Node built-in test runner (node --test)
 // Spawns the MCP server as a child process and exercises it over stdio.
 
 const { test } = require('node:test');
@@ -59,7 +59,7 @@ test('initialize returns protocolVersion and serverInfo', async () => {
   ]);
   assert.equal(res.id, 1);
   assert.equal(res.result.protocolVersion, '2024-11-05');
-  assert.equal(res.result.serverInfo.name, '@distil.net/mcp');
+  assert.equal(res.result.serverInfo.name, 'distil-mcp');
   assert.ok(res.result.capabilities.tools);
 });
 

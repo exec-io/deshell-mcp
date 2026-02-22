@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-// @distil.net/mcp — MCP server for the Distil proxy
+// distil-mcp — MCP server for the Distil proxy
 // Exposes distil_scrape, distil_search, distil_screenshot, distil_render, distil_raw
 // and distil_nocache as MCP tools over JSON-RPC 2.0 stdio.
-// Usage: npx @distil.net/mcp (set DISTIL_API_KEY env var first)
+// Usage: npx distil-mcp (set DISTIL_API_KEY env var first)
 'use strict';
 
 const https = require('https');
 const http = require('http');
 const { URL } = require('url');
 
-const PROXY_BASE = (process.env.DISTIL_PROXY_URL || 'https://proxy.Distil.ai').replace(/\/$/, '');
+const PROXY_BASE = (process.env.DISTIL_PROXY_URL || 'https://proxy.distil.net').replace(/\/$/, '');
 let   API_KEY    = process.env.DISTIL_API_KEY || '';
 const VERSION    = require('./package.json').version;
 
@@ -18,26 +18,14 @@ const VERSION    = require('./package.json').version;
 const [,, cmd, ...cliArgs] = process.argv;
 
 if (cmd === 'fetch' || cmd === 'search') {
-  if (!API_KEY) {
-    // Try macOS Keychain fallback
-    const { execSync } = require('child_process');
-    try {
-      process.env.DISTIL_API_KEY = execSync(
-        'security find-generic-password -s Distil-api-key -w 2>/dev/null',
-        { encoding: 'utf8', stdio: ['pipe','pipe','pipe'] }
-      ).trim();
-      API_KEY = process.env.DISTIL_API_KEY;
-    } catch (_) {}
-  }
-
   (async () => {
     try {
       if (cmd === 'fetch') {
-        if (!cliArgs[0]) { process.stderr.write('Usage: Distil fetch <url>\n'); process.exit(1); }
+        if (!cliArgs[0]) { process.stderr.write('Usage: distil fetch <url>\n'); process.exit(1); }
         const result = await callTool('distil_scrape', { url: cliArgs[0] });
         process.stdout.write(result + '\n');
       } else {
-        if (!cliArgs.length) { process.stderr.write('Usage: Distil search <query>\n'); process.exit(1); }
+        if (!cliArgs.length) { process.stderr.write('Usage: distil search <query>\n'); process.exit(1); }
         const result = await callTool('distil_search', { query: cliArgs.join(' ') });
         process.stdout.write(result + '\n');
       }
@@ -102,10 +90,10 @@ const TOOLS = [
   },
   {
     name: 'distil_render',
-    description: 'Render a web page (such as a single page javascript app) before trying to extract markdown.',
+    description: 'Render a javascript single page application (SPA) before trying to extract markdown.',
     inputSchema: {
       type: 'object',
-      properties: { url: { type: 'string', description: 'The URL of the javascript web page to render' } },
+      properties: { url: { type: 'string', description: 'The URL of the javascript SPA to render' } },
       required: ['url'],
     },
   },
@@ -173,7 +161,7 @@ async function dispatch(msg) {
   try {
     switch (method) {
       case 'initialize':
-        ok(id, { protocolVersion: '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: '@distil.net/mcp', version: VERSION } });
+        ok(id, { protocolVersion: '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: 'distil-mcp', version: VERSION } });
         break;
       case 'initialized':
       case 'notifications/initialized':

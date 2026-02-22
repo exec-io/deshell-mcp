@@ -1,6 +1,6 @@
-# @distil.net/mcp
+# distil-mcp
 
-MCP for the [Distil](https://Distil.ai) web proxy. Provides a fall through CLI and also Gives Claude Desktop, Cursor, Windsurf and any MCP-compatible AI tool the ability to fetch web pages and search the web — clean Markdown, no noise.
+MCP for the [Distil](https://distil.net) web proxy. Provides a fall through CLI and also gives Claude Desktop, Cursor, Windsurf and any MCP-compatible AI tool the ability to fetch web pages and search the web — clean Markdown, no noise.
 
 ## Tools
 
@@ -18,7 +18,7 @@ MCP for the [Distil](https://Distil.ai) web proxy. Provides a fall through CLI a
 
 ### 1. Get a Distil API key
 
-Sign up at [distil.ai](https://distil.ai) to get your API key (`dk_...`).
+Sign up at [distil.net](https://distil.net) to get your API key (`dk_...`).
 
 ### 2. Add to your MCP config
 
@@ -29,7 +29,7 @@ Sign up at [distil.ai](https://distil.ai) to get your API key (`dk_...`).
   "mcpServers": {
     "Distil": {
       "command": "npx",
-      "args": ["-y", "@distil.net/mcp"],
+      "args": ["-y", "distil-mcp"],
       "env": {
         "DISTIL_API_KEY": "dk_your_key_here"
       }
@@ -49,7 +49,7 @@ The `distil_scrape`, `distil_search`, `distil_screenshot`, `distil_render`, `dis
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
 | `DISTIL_API_KEY` | *(required)* | Your Distil API key |
-| `DISTIL_PROXY_URL` | `https://proxy.distil.ai` | Proxy base URL (override for self-hosted) |
+| `DISTIL_PROXY_URL` | `https://proxy.distil.net` | Proxy base URL (override for self-hosted) |
 
 ## Usage examples
 
@@ -64,7 +64,7 @@ Once installed, you can ask your AI assistant things like:
 ## Running manually
 
 ```bash
-DISTIL_API_KEY=dk_your_key npx @distil.net/mcp
+DISTIL_API_KEY=dk_your_key npx distil-mcp
 ```
 
 The server speaks [MCP JSON-RPC 2.0](https://modelcontextprotocol.io) over stdio.
@@ -72,9 +72,9 @@ The server speaks [MCP JSON-RPC 2.0](https://modelcontextprotocol.io) over stdio
 ## Development
 
 ```bash
-# Clone the Distil repo
+# Clone the repo
 git clone https://github.com/exec-io/distil-mcp.git
-cd distil.net/mcp
+cd distil-mcp
 
 # Run tests (no dependencies needed — uses Node built-ins only)
 node --test test.js
@@ -82,4 +82,4 @@ node --test test.js
 
 ## License
 
-MIT — see [LICENSE.md](../LICENSE.md) in the repo root.
+MIT — see [LICENSE.md](LICENSE.md) in the repo root.
