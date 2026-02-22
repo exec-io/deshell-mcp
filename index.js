@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// distil-mcp — MCP server for the Distil proxy
+// distil-proxy — MCP server for the Distil proxy
 // Exposes distil_scrape, distil_search, distil_screenshot, distil_render, distil_raw
 // and distil_nocache as MCP tools over JSON-RPC 2.0 stdio.
-// Usage: npx distil-mcp (set DISTIL_API_KEY env var first)
+// Usage: npx distil-proxy (set DISTIL_API_KEY env var first)
 'use strict';
 
 const https = require('https');
@@ -161,7 +161,7 @@ async function dispatch(msg) {
   try {
     switch (method) {
       case 'initialize':
-        ok(id, { protocolVersion: '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: 'distil-mcp', version: VERSION } });
+        ok(id, { protocolVersion: '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: 'distil-proxy', version: VERSION } });
         break;
       case 'initialized':
       case 'notifications/initialized':

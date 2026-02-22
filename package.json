@@ -1,11 +1,11 @@
 {
-  "name": "distil-mcp",
-  "version": "1.2.0",
+  "name": "distil-proxy",
+  "version": "1.3.0",
   "description": "MCP server for the Distil web proxy — distil_scrape, distil_search, distil_screenshot, distil_raw, distil_render, distil_nocache for Claude Desktop, Cursor, Windsurf, and any MCP-compatible AI tool",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/exec-io/distil-mcp.git",
+    "url": "https://github.com/exec-io/distil-proxy.git",
     "directory": "mcp"
   },
   "keywords": ["mcp", "distil", "web-scraping", "search", "ai", "claude", "cursor", "openclaw"],

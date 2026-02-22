@@ -1,4 +1,4 @@
-# distil-mcp
+# distil-proxy
 
 MCP for the [Distil](https://distil.net) web proxy. Provides a fall through CLI and also gives Claude Desktop, Cursor, Windsurf and any MCP-compatible AI tool the ability to fetch web pages and search the web — clean Markdown, no noise.
 
@@ -29,7 +29,7 @@ Sign up at [distil.net](https://distil.net) to get your API key (`dk_...`).
   "mcpServers": {
     "Distil": {
       "command": "npx",
-      "args": ["-y", "distil-mcp"],
+      "args": ["-y", "distil-proxy"],
       "env": {
         "DISTIL_API_KEY": "dk_your_key_here"
       }
@@ -64,7 +64,7 @@ Once installed, you can ask your AI assistant things like:
 ## Running manually
 
 ```bash
-DISTIL_API_KEY=dk_your_key npx distil-mcp
+DISTIL_API_KEY=dk_your_key npx distil-proxy
 ```
 
 The server speaks [MCP JSON-RPC 2.0](https://modelcontextprotocol.io) over stdio.
@@ -73,8 +73,8 @@ The server speaks [MCP JSON-RPC 2.0](https://modelcontextprotocol.io) over stdio
 
 ```bash
 # Clone the repo
-git clone https://github.com/exec-io/distil-mcp.git
-cd distil-mcp
+git clone https://github.com/exec-io/distil-proxy.git
+cd distil-proxy
 
 # Run tests (no dependencies needed — uses Node built-ins only)
 node --test test.js
